@@ -14,10 +14,18 @@ class ViewController: UIViewController
     
     var userIsInTheMiddleOfTypingANumber = false
     
+    @IBAction func clear() {
+        userIsInTheMiddleOfTypingANumber = false
+        display.text = "0"
+        operandStack = Array<Double>()
+    }
+    
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
         if userIsInTheMiddleOfTypingANumber {
-            display.text = display.text! + digit
+            if digit != "." || display.text!.rangeOfString(".") == nil {
+                display.text = display.text! + digit
+            }
         } else {
             display.text = digit
             userIsInTheMiddleOfTypingANumber = true
@@ -36,6 +44,8 @@ class ViewController: UIViewController
         case "×": performOperation { $0 * $1 }
         case "÷": performOperation { $1 / $0 }
         case "√": performUnaryOperation { sqrt($0) }
+        case "sin": performUnaryOperation { sin($0) }
+        case "cos": performUnaryOperation { cos($0) }
         default: break
         }
     }
@@ -54,6 +64,13 @@ class ViewController: UIViewController
         }
     }
     
+    @IBAction func pi(sender: UIButton) {
+        enter()
+        display.text = sender.currentTitle!
+        operandStack.append(M_PI)
+        userIsInTheMiddleOfTypingANumber = false
+    }
+    
     var operandStack = Array<Double>()
     
     @IBAction func enter() {
@@ -64,7 +81,11 @@ class ViewController: UIViewController
     var displayValue: Double {
         get {
             println(display.text!)
-            return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
+            if display.text! == "π" {
+                return M_PI
+            } else {
+                return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
+            }
         }
         set {
             display.text = "\(newValue)"
