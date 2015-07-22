@@ -14,10 +14,11 @@ class ViewController: UIViewController
     
     var userIsInTheMiddleOfTypingANumber = false
     
+    var brain = CalculatorBrain()
+    
     @IBAction func clear() {
         userIsInTheMiddleOfTypingANumber = false
         display.text = "0"
-        operandStack = Array<Double>()
     }
     
     @IBAction func appendDigit(sender: UIButton) {
@@ -33,49 +34,35 @@ class ViewController: UIViewController
     }
     
     @IBAction func operate(sender: UIButton) {
-        let operation = sender.currentTitle!
         if userIsInTheMiddleOfTypingANumber {
             enter()
         }
         
-        switch operation {
-        case "+": performOperation { $0 + $1 }
-        case "−": performOperation { $1 - $0 }
-        case "×": performOperation { $0 * $1 }
-        case "÷": performOperation { $1 / $0 }
-        case "√": performUnaryOperation { sqrt($0) }
-        case "sin": performUnaryOperation { sin($0) }
-        case "cos": performUnaryOperation { cos($0) }
-        default: break
-        }
-    }
-    
-    func performOperation(operation: (Double, Double) -> Double) {
-        if operandStack.count >= 2 {
-            displayValue = operation(operandStack.removeLast(), operandStack.removeLast())
-            enter()
-        }
-    }
-    
-    func performUnaryOperation(operation: Double -> Double) {
-        if operandStack.count >= 1 {
-            displayValue = operation(operandStack.removeLast())
-            enter()
+        if let operation = sender.currentTitle {
+            if let result = brain.performOperation(operation) {
+                displayValue = result
+            } else {
+                // TODO: displayValue should accept an optional
+                displayValue = 0
+            }
         }
     }
     
     @IBAction func pi(sender: UIButton) {
         enter()
         display.text = sender.currentTitle!
-        operandStack.append(M_PI)
+        brain.pushOperand(M_PI)
         userIsInTheMiddleOfTypingANumber = false
     }
     
-    var operandStack = Array<Double>()
-    
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
-        operandStack.append(displayValue)
+        if let result = brain.pushOperand(displayValue) {
+            displayValue = result
+        } else {
+            // TODO: displayValue should accept an optional
+            displayValue = 0
+        }
     }
     
     var displayValue: Double {
