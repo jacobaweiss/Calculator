@@ -69,6 +69,11 @@ class CalculatorBrain
         return (nil, ops)
     }
     
+    func clear() -> Double {
+        opStack = []
+        return 0
+    }
+    
     func evaluate() -> Double? {
         let (result, _) = evaluate(opStack)
         return result

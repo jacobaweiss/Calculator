@@ -18,7 +18,7 @@ class ViewController: UIViewController
     
     @IBAction func clear() {
         userIsInTheMiddleOfTypingANumber = false
-        display.text = "0"
+        displayValue = brain.clear()
     }
     
     @IBAction func appendDigit(sender: UIButton) {
@@ -50,8 +50,8 @@ class ViewController: UIViewController
     
     @IBAction func pi(sender: UIButton) {
         enter()
-        display.text = sender.currentTitle!
         brain.pushOperand(M_PI)
+        display.text = sender.currentTitle!
         userIsInTheMiddleOfTypingANumber = false
     }
     
@@ -67,7 +67,6 @@ class ViewController: UIViewController
     
     var displayValue: Double {
         get {
-            println(display.text!)
             if display.text! == "π" {
                 return M_PI
             } else {
